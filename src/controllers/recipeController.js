@@ -1,4 +1,4 @@
-import { getCategories, getRecipeById, getRecipesByCategory } from "../services/recipeService.js";
+import { addFavoriteRecipe, getCategories, getFavoriteRecipes, getRecipeById, getRecipesByCategory, removeFavoriteRecipe } from "../services/recipeService.js";
 import CustomError from "../utils/customError.js";
 import { successResponse, errorResponse } from "../utils/response.js";
 
@@ -41,4 +41,46 @@ const getRecipeByIdController = async (req, res) => {
   }
 }
 
-export default { getCategoryController,getRecipeByCategoryController,getRecipeByIdController };
+const addFavoriteRecipeController = async (req, res) => {
+  try {
+    const addFavourite = await addFavoriteRecipe(req);
+    successResponse(res, null, "Recipe added to favorites successfully");
+  } catch (error) {
+    if (error instanceof CustomError) {
+      errorResponse(res, error.message, error.message, error.statusCode);
+    } else {
+      errorResponse(res, error.message, "Failed to retrieve recipe");
+    }
+  }
+}
+
+const removeFavoriteRecipeController = async (req, res) => {
+  try {
+    const removeFavourite = await removeFavoriteRecipe(req);
+    successResponse(res, null, "Recipe removed from favorites successfully");
+  } catch (error) {
+    if (error instanceof CustomError) {
+      errorResponse(res, error.message, error.message, error.statusCode);
+    } else {
+      errorResponse(res, error.message, "Failed to retrieve recipe");
+    }
+  }
+}
+
+const getFavoriteRecipesController = async (req, res) => {
+  try {
+    const FavoriteRecipes = await getFavoriteRecipes(req);
+    successResponse(res, FavoriteRecipes, "Favorite Recipes retrieved successfully");
+   
+  } catch (error) {
+    if (error instanceof CustomError) {
+      errorResponse(res, error.message, error.message, error.statusCode);
+    } else {
+      errorResponse(res, error.message, "Failed to retrieve Favorite Recipes");
+    }
+  }
+}
+
+
+
+export default { getCategoryController,getRecipeByCategoryController,getRecipeByIdController,addFavoriteRecipeController,removeFavoriteRecipeController ,getFavoriteRecipesController};

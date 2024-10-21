@@ -58,39 +58,53 @@ const getUserByIdService = async (userId) => {
   return user;
 };
 
-const updateUserService = async (userId, userData) => {
+const updateUserService = async (req) => {
+  const { id } = req.user;
+  const userId = req.params.id;
+  const { username, email, password, confirmPassword } = req.body;
+
+  if (userId !== id) {
+    throw new CustomError("Unauthorized", 401);
+  }
+
   const user = await User.findById(userId);
   if (!user) {
     throw new CustomError("User not found", 404);
   }
 
-  const { username, email, password, confirmPassword } = userData;
+  if (username) user.username = username;
+  if (email) user.email = email;
 
-  if (password !== confirmPassword) {
-    throw new CustomError("Passwords do not match", 400);
+  if (password) {
+    if (password !== confirmPassword) {
+      throw new CustomError("Passwords do not match", 400);
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  user.username = username;
-  user.email = email;
-  user.password = hashedPassword;
 
   await user.save();
 
-  const { password: userPassword, ...userWithoutPassword } = user._doc;
+  const { password: userPassword, ...userWithoutPassword } = user.toObject();
 
   return userWithoutPassword;
 };
 
-const deleteUserService = async (userId) => {
+  
+
+const deleteUserService = async (req) => {
+  const { id } = req.user;
+  const userId = req.params.id;
+
+  if (userId !== id) {
+    throw new CustomError("Unauthorized", 401);
+  } 
+
   const user = await User.findById(userId);
   if (!user) {
     throw new CustomError("User not found", 404);
   }
-  // delete user
   await user.deleteOne();
-
 
   const { password: userPassword, ...userWithoutPassword } = user._doc;
 

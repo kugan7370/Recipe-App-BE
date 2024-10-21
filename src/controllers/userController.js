@@ -59,7 +59,7 @@ const getUserByIdController = async (req, res, next) => {
 
 const updateUserController = async (req, res, next) => {
   try {
-    const updatedUser = await updateUserService(req.params.id, req.body);
+    const updatedUser = await updateUserService(req);
     successResponse(res, updatedUser, "User updated successfully");
   } catch (error) {
     errorResponse(res, error.message, "Failed to update user");
@@ -68,7 +68,7 @@ const updateUserController = async (req, res, next) => {
 
 const deleteUserController = async (req, res, next) => {
   try {
-    const deletedUser = await deleteUserService(req.params.id);
+    const deletedUser = await deleteUserService(req);
     successResponse(res, deletedUser, "User deleted successfully");
   } catch (error) {
     errorResponse(res, error.message, "Failed to delete user");

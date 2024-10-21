@@ -11,4 +11,11 @@ router.get("/getRecipeByCategory/:category", recipeController.getRecipeByCategor
 
 router.get("/getRecipeById/:id", recipeController.getRecipeByIdController);
 
+router.put("/addFavoriteRecipe/:recipeId", verifyUserToken, recipeController.addFavoriteRecipeController);
+
+router.put("/removeFavoriteRecipe/:recipeId", verifyUserToken, recipeController.removeFavoriteRecipeController);
+
+router.get("/getFavoriteRecipes", verifyUserToken, recipeController.getFavoriteRecipesController);
+
+
 export default router;
