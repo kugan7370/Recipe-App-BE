@@ -13,11 +13,25 @@ const getCategories = async () => {
 const getRecipesByCategory = async (category) => {
   try {
     const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
-    return response.data.meals;
+
+    if (response.data.meals) {
+
+      const limitedMeals = response.data.meals.slice(0, 10);
+      const favoriteRecipes = await Promise.all(
+        limitedMeals.map(async (meal) => {
+          return await getRecipeById(meal.idMeal);
+        })
+      );
+
+      return favoriteRecipes; 
+    }
+
+    return []; 
   } catch (error) {
     throw new Error('Failed to fetch recipes from external API');
   }
 };
+
 
 const getRecipeById= async (id) => {
   try {
@@ -49,7 +63,12 @@ const addFavoriteRecipe = async (req) => {
     user.favorites.push(recipeId);
     await user.save();
 
-    return { message: 'Recipe added to favorites successfully', favorites: user.favorites };
+    const favoriteRecipes = [];
+    for (const recipeId of user.favorites) {
+      const recipe = await getRecipeById(recipeId);
+      favoriteRecipes.push(recipe);
+    }
+    return favoriteRecipes;
 
   } catch (error) {
     throw new CustomError(error.message, error.statusCode || 500);
@@ -79,7 +98,13 @@ const removeFavoriteRecipe = async (req) => {
     user.favorites = user.favorites.filter(favorite => favorite !== recipeId);
     await user.save();
 
-    return { message: 'Recipe removed from favorites successfully', favorites: user.favorites };
+    const favoriteRecipes = [];
+    for (const recipeId of user.favorites) {
+      const recipe = await getRecipeById(recipeId);
+      favoriteRecipes.push(recipe);
+    }
+    return favoriteRecipes;
+
 
   } catch (error) {
     throw new CustomError(error.message, error.statusCode || 500);
@@ -94,7 +119,12 @@ const getFavoriteRecipes = async (req) => {
     if (!user) {
       throw new CustomError('User not found', 404); 
     }
-    return user.favorites;
+    const favoriteRecipes = [];
+    for (const recipeId of user.favorites) {
+      const recipe = await getRecipeById(recipeId);
+      favoriteRecipes.push(recipe);
+    }
+    return favoriteRecipes;
   }
   catch (error) {
     throw new CustomError(error.message, error.statusCode || 500);

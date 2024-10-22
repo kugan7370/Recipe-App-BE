@@ -44,7 +44,7 @@ const getRecipeByIdController = async (req, res) => {
 const addFavoriteRecipeController = async (req, res) => {
   try {
     const addFavourite = await addFavoriteRecipe(req);
-    successResponse(res, null, "Recipe added to favorites successfully");
+    successResponse(res, addFavourite, "Recipe added to favorites successfully");
   } catch (error) {
     if (error instanceof CustomError) {
       errorResponse(res, error.message, error.message, error.statusCode);
@@ -57,7 +57,7 @@ const addFavoriteRecipeController = async (req, res) => {
 const removeFavoriteRecipeController = async (req, res) => {
   try {
     const removeFavourite = await removeFavoriteRecipe(req);
-    successResponse(res, null, "Recipe removed from favorites successfully");
+    successResponse(res, removeFavourite, "Recipe removed from favorites successfully");
   } catch (error) {
     if (error instanceof CustomError) {
       errorResponse(res, error.message, error.message, error.statusCode);
