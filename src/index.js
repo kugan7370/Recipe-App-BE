@@ -12,7 +12,12 @@ const PORT = process.env.PORT || 3000;
 //middlewares
 app.use(express.json());
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: "https://recipe-app-fe-8x8o.vercel.app/",
+    credentials: true,
+  }
+));
 
 
 app.get("/", (req, res) => {
